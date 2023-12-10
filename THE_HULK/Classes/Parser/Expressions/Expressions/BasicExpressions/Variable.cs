@@ -83,7 +83,7 @@ public class Variable : BasicExpression
             Evaluate(internalEnvironment!.father!);
         }
 
-        switch (value.GetType().ToString())
+        switch (value!.GetType().ToString())
         {
             case "System.String": // String
                 Kind = ExpressionKind.String;
