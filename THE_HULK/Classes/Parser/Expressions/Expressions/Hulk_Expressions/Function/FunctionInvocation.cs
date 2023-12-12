@@ -34,30 +34,46 @@ public class FunctionInvocation : Function
         }
     }
 
-    public void CheckVariablesCount(Environment scope)
+    public void CheckCount(Environment _environment)
     {
         if (variablesOfTheFunction.Count != Count)
         {
-            Console.WriteLine($"!SEMANTIC ERROR: function \"{name}\" needs {scope.functions[name].VariablesOfTheFunction!.Count} argument(s), but {variablesOfTheFunction.Count} were given.");
+            Console.WriteLine($"! SEMANTIC ERROR: function \"{name}\" needs {_environment.functions[name].VariablesOfTheFunction!.Count} argument(s), but {variablesOfTheFunction.Count} were given.");
             throw new Exception();
         }
     }
 
-    public override void Evaluate(Environment scope)
+    public override void Evaluate(Environment _environment)
     {
 
-        Environment child = scope.CreateChild();
-        // tiene que llegar al global
-        child.functions = scope.functions;
+        Environment child = _environment.CreateChild();
+
+        void PublicEnvironmental(Environment _environment)
+        {
+            if(_environment.father is null)
+            {
+                child.functions = _environment.functions;
+                return;
+            }
+            else
+            {
+                PublicEnvironmental(_environment.father);
+            }
+        }
+
+        PublicEnvironmental(child);
+
+        //child.functions = _environment.functions;
 
         for (int i = 0; i < variablesOfTheFunction.Count; i++)
             child.variables.Add(publicEnvironment.functions[name].VariablesOfTheFunction![i], variablesOfTheFunction[i]);
 
         foreach (var arg in child.variables)
-            child.variables[arg.Key].Evaluate(scope);
+            child.variables[arg.Key].Evaluate(_environment);
 
-        AbstractSyntaxTree builder = new AbstractSyntaxTree(publicEnvironment.functions[name].tokens!, child);
-        Expression ast = builder.Parse();
+        AbstractSyntaxTree parser = new AbstractSyntaxTree(publicEnvironment.functions[name].tokens!, child);
+        
+        Expression ast = parser.Parse();
         ast.Evaluate(child);
 
         if (ast.value is string) this.Kind = ExpressionKind.String;

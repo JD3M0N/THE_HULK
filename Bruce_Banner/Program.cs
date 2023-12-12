@@ -4,13 +4,13 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using THE_HULK;
 
-
-class Interpreter
+namespace Bruce_Banner;
+public class Interpreter
 {
     static void Main()
     {
-        //Run();
-        Testin();
+        Run();
+        // Testin();
     }
 
     #region Explanation
@@ -44,9 +44,11 @@ class Interpreter
 
     #endregion
     public static void Run()
-    {
+    {   
+        int count = 0;
+        int maxCount = 20000;
+
         THE_HULK.Environment PublicEnvironment = new THE_HULK.Environment();
-        // Console.Clear();
         System.Console.WriteLine("Welcome to [H]avana [U]niversity [L]anguage for [K]ompilers:"); ;
         Console.WriteLine("Start using HULK :) ");
 
@@ -63,8 +65,6 @@ class Interpreter
                 var Lexer = new Lexer(input);
                 List<Token> tokens = Lexer.Tokenizer();
 
-                Stopwatch crono = new Stopwatch();
-
                 AbstractSyntaxTree parseAST = new AbstractSyntaxTree(tokens, PublicEnvironment);
 
                 Expression AST = parseAST.Parse();
@@ -72,17 +72,19 @@ class Interpreter
                 if (AST is not null)
                 {
                     AST.Evaluate(PublicEnvironment);
+                    System.Console.WriteLine(AST.value);
                 }
             }
 
             catch (Exception)
             {
-                // System.Console.WriteLine("Error 404");
+                // System.Console.WriteLine("Error 404: Error found(Contradiction)");
                 continue;
             }
         }
     }
 
+    //Testin'
     public static void Testin()
     {
         THE_HULK.Environment PublicEnvironment = new THE_HULK.Environment();
@@ -95,11 +97,11 @@ class Interpreter
             //                                                         in a + x;",
             // "f(10);",
 
-            //"function fib(n) => if(n>1) fib(n-1) + fib(n-2) else 1;",
-            //"fib(3);"
+            // "function fib(n) => if(n>1) fib(n-1) + fib(n-2) else 1;",
+            // "print(fib(-3));"
             // "1/0;"
-
-            "let a = 42 in if (a % 2 == 0) print(\"Even\") else print(\"odd\");"
+            
+            //"let a = 42 in if (a % 2 == 0) print(\"Even\") else print(\"odd\");"
 
             // "print(7 + (let x = 2 in x * x));"
         };

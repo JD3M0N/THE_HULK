@@ -339,7 +339,7 @@ public class AbstractSyntaxTree
 
         GetArgs(privateEnvironment, function.variablesOfTheFunction);
 
-        function.CheckVariablesCount(privateEnvironment);
+        function.CheckCount(privateEnvironment);
 
         WatchFor(TokenKind.RightParenthesis);
 
