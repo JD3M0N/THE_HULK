@@ -896,3 +896,81 @@ Este caso en particular retorna 11.
 ##### If_else
 
 Las condiciones en HULK se implementan con la expresión `if-else`, que recibe una expresión booleana entre paréntesis, y dos expresiones para el cuerpo del `if` y el `else` respectivamente. Siempre deben incluirse ambas partes. Como `if-else` es una expresión, se puede usar dentro de otra expresión (al estilo del operador ternario en C#):
+
+```cs
+public class If_Else : Expression
+{
+    public Expression condition;
+    public Expression nodeLeft;
+    public Expression nodeRight;
+
+    public If_Else(Expression _condition, Expression _nodeLeft, Expression _nodeRight) : base(null!)
+    {
+        condition = _condition;
+        nodeLeft = _nodeLeft;
+        nodeRight = _nodeRight;
+        Kind = ExpressionKind.Temp;
+    }
+
+    public override ExpressionKind Kind { get; set; }
+    public override object? value { get; set; }
+    public override Environment? environment { get; set; }
+
+    public override void Evaluate(Environment _environment)
+    {
+        condition!.Evaluate(_environment);
+
+        if (condition.value is true)
+        {
+            nodeLeft.Evaluate(_environment);
+            value = nodeLeft.value;
+            Kind = nodeLeft.Kind;
+        }
+        else
+        {
+            nodeRight.Evaluate(_environment);
+            value = nodeRight!.GetValue();
+            Kind = nodeRight.Kind;
+        }
+    }
+
+    public override object? GetValue() => value;
+}
+```
+>Implementacion de la clase `If_Else`
+
+Analicemos la clase mediante el ejemplo:
+
+```cs
+let a = 42 in if (a % 2 == 0) print("Even") else print("odd");
+```
+
+Procesamos la primera parte como acabamos de observar en el `Let_in`. Una vez en el parse tengamos procesado todo el `let` y nos encontremos en el `in` pasamos a parsear el miembro derecho del in, donde nos encontraremos con el metodo `ParseIf`.
+
+```cs
+Expression PaseIf(Environment privateEnvironment)
+    {
+        Eat();
+
+        If_Else If = new(null!, null!, null!);
+        
+        If.condition = ParseExpressionLv1(privateEnvironment);
+
+        if (currentToken.Kind == TokenKind.ElseKeyWord)
+        {
+            System.Console.WriteLine($"! SYNTAX ERROR: if_else expression isnt complete.");
+            throw new Exception();
+        }
+
+        If.nodeLeft = ParseExpressionLv1(privateEnvironment);
+
+        WatchFor(TokenKind.ElseKeyWord);
+
+        If.nodeRight = ParseExpressionLv1(privateEnvironment);
+
+        return If;
+    }
+```
+>Se parsea la condicion con el metodo `ParseExpressionLv1` el cual explicaremos detalladamente mas adelante, el cual se encarga de ir parseando recursivamente los elementos dentro de la condicional `If`.
+
+>Se eplica como queda parseado de una mejor manera mediante un diagrama.

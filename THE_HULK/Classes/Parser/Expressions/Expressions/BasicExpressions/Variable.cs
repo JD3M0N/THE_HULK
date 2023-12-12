@@ -19,7 +19,7 @@ public class Variable : BasicExpression
 
     // this is the semantic check for the variable it makes sure that the variable exists
     // if not it throws an exception
-    public void CheckSemantic(Environment privateEnvironment)
+    public void SemantCheck(Environment privateEnvironment)
     {
         switch (name)
         {
@@ -42,7 +42,7 @@ public class Variable : BasicExpression
         }
         else
         {
-            CheckSemantic(privateEnvironment.father!);
+            SemantCheck(privateEnvironment.father!);
         }
     }
 

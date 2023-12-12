@@ -9,8 +9,8 @@ class Interpreter
 {
     static void Main()
     {
-        Run();
-        //Testin();
+        //Run();
+        Testin();
     }
 
     #region Explanation
@@ -99,9 +99,9 @@ class Interpreter
             //"fib(3);"
             // "1/0;"
 
-            // "let a = 42 in if (a % 2 == 0) print(\"Even\") else print(\"odd\");"
+            "let a = 42 in if (a % 2 == 0) print(\"Even\") else print(\"odd\");"
 
-            "print(7 + (let x = 2 in x * x));"
+            // "print(7 + (let x = 2 in x * x));"
         };
         foreach (var input in inputs)
         {

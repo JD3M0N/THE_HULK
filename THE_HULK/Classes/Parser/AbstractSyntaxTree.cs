@@ -180,7 +180,7 @@ public class AbstractSyntaxTree
 
             // ===>>> Conditional Expressions <<<===
             case TokenKind.IfKeyWord:
-                return ParseConditionalExpression(privateEnvironment);
+                return ParseIf(privateEnvironment);
 
             case TokenKind.ElseKeyWord:
                 System.Console.WriteLine($"! SYNTAX ERROR: if_else structure isnt correct");
@@ -236,7 +236,7 @@ public class AbstractSyntaxTree
                     return IndexFunction(privateEnvironment);
                 }
                 Variable variable = new(currentToken.GetTokenName());
-                variable.CheckSemantic(privateEnvironment);
+                variable.SemantCheck(privateEnvironment);
                 Eat();
                 return variable;
             case TokenKind.FunctionKeyWord:
@@ -254,20 +254,27 @@ public class AbstractSyntaxTree
         }
     }
 
-    Expression ParseConditionalExpression(Environment privateEnvironment)
+    Expression ParseIf(Environment privateEnvironment)
     {
         Eat();
-        If_Else conditionalExpression = new(null!, null!, null!);
-        conditionalExpression.condition = ParseExpressionLv1(privateEnvironment);
+
+        If_Else If = new(null!, null!, null!);
+
+        If.condition = ParseExpressionLv1(privateEnvironment);
+
         if (currentToken.Kind == TokenKind.ElseKeyWord)
         {
             System.Console.WriteLine($"! SYNTAX ERROR: if_else expression isnt complete.");
             throw new Exception();
         }
-        conditionalExpression.nodeLeft = ParseExpressionLv1(privateEnvironment);
+
+        If.nodeLeft = ParseExpressionLv1(privateEnvironment);
+
         WatchFor(TokenKind.ElseKeyWord);
-        conditionalExpression.nodeRight = ParseExpressionLv1(privateEnvironment);
-        return conditionalExpression;
+
+        If.nodeRight = ParseExpressionLv1(privateEnvironment);
+        
+        return If;
     }
 
     Expression ParseLet_in(Environment privateEnvironment)
