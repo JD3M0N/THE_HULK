@@ -12,5 +12,5 @@ public abstract class UnaryExpression : Expression
         node = _node;
     }
 
-    public abstract void CheckNodeSemantic(Expression _node);
+    public abstract void SemantiCheck(Expression _node);
 }

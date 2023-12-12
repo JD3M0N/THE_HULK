@@ -19,6 +19,7 @@ public class Concatenation : BinaryExpression
     {
         nodeLeft!.Evaluate(_environment);
         nodeRight!.Evaluate(_environment);
+        
         value = nodeLeft.GetValue()!.ToString()! + nodeRight.GetValue()!.ToString()!;
     }
 

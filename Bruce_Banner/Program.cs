@@ -10,6 +10,7 @@ class Interpreter
     static void Main()
     {
         Run();
+        //Testin();
     }
 
     #region Explanation
@@ -44,9 +45,9 @@ class Interpreter
     #endregion
     public static void Run()
     {
-        THE_HULK.Environment GlobalEnvironment = new THE_HULK.Environment();
-        Console.Clear();
-        System.Console.WriteLine("Welcome to [H]avana [U]niversity [L]anguage for [K]ompilers:");;
+        THE_HULK.Environment PublicEnvironment = new THE_HULK.Environment();
+        // Console.Clear();
+        System.Console.WriteLine("Welcome to [H]avana [U]niversity [L]anguage for [K]ompilers:"); ;
         Console.WriteLine("Start using HULK :) ");
 
         while (true)
@@ -64,22 +65,58 @@ class Interpreter
 
                 Stopwatch crono = new Stopwatch();
 
-                AbstractSyntaxTree buildAST = new AbstractSyntaxTree(tokens, GlobalEnvironment);
+                AbstractSyntaxTree parseAST = new AbstractSyntaxTree(tokens, PublicEnvironment);
 
-                Expression AST = buildAST.Parse();
+                Expression AST = parseAST.Parse();
 
                 if (AST is not null)
                 {
-                    AST.Evaluate(GlobalEnvironment);
-                    Console.WriteLine(AST.value);
+                    AST.Evaluate(PublicEnvironment);
                 }
             }
 
             catch (Exception)
             {
-                Console.WriteLine("Error 404");
+                // System.Console.WriteLine("Error 404");
                 continue;
             }
         }
+    }
+
+    public static void Testin()
+    {
+        THE_HULK.Environment PublicEnvironment = new THE_HULK.Environment();
+        string[] inputs =
+        {
+            // @"function f(x) => let a = 
+            //                             (let b = 
+            //                                     (let c = 1 in c) 
+            //                                                     in b) 
+            //                                                         in a + x;",
+            // "f(10);",
+
+            //"function fib(n) => if(n>1) fib(n-1) + fib(n-2) else 1;",
+            //"fib(3);"
+            // "1/0;"
+
+            // "let a = 42 in if (a % 2 == 0) print(\"Even\") else print(\"odd\");"
+
+            "print(7 + (let x = 2 in x * x));"
+        };
+        foreach (var input in inputs)
+        {
+            Lexer lexer = new Lexer(input);
+            List<Token> tokens = lexer.Tokenizer();
+
+            AbstractSyntaxTree parseAST = new AbstractSyntaxTree(tokens, PublicEnvironment);
+            Expression AST = parseAST.Parse();
+
+            if (AST is not null)
+            {
+                AST.Evaluate(PublicEnvironment);
+                // System.Console.WriteLine(AST.value); 
+            }
+        }
+        
     }
 }

@@ -69,9 +69,11 @@ public class Variable : BasicExpression
 
         if (internalEnvironment!.variables.ContainsKey(name))
         {
-
+            // si tiene un valor no nulo le asigno a la propiedad value el valor que tiene
             if (internalEnvironment.variables[name].value is not null)
                 value = internalEnvironment.variables[name].value;
+
+            // de lo contrario tengo que procesar la expresion asociada a la variable 
             else
             {
                 internalEnvironment.variables[name].Evaluate(internalEnvironment.variables[name].environment!);

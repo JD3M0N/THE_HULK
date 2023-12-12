@@ -6,26 +6,25 @@ public class Print : BasicExpression
 
     public override object? value { get; set; }
 
-    List<Expression> Arguments;
+    List<Expression> parameters;
 
-    public Print(List<Expression> Arguments, Environment scope) : base(scope)
+    public Print(List<Expression> _parameters, Environment _environment) : base(_environment)
     {
-        this.Arguments = Arguments;
+        this.parameters = _parameters;
         Kind = ExpressionKind.Temp;
-        if (Arguments.Count != 1)
+        if (_parameters.Count != 1)
         {
-            Console.WriteLine($"!semantic error: function \"print\" recieves 1 argument(s), but {Arguments.Count} were given.");
+            System.Console.WriteLine($"! SEMANTIC ERROR: function \"cos\" needs 1 parameter(s), but {_parameters.Count} were given.");
             throw new Exception();
         }
     }
 
-    public override void Evaluate(Environment scope)
+    public override void Evaluate(Environment _environment)
     {
-        Arguments[0].Evaluate(scope);
-        value = Arguments[0].value;
-        if (value is string) Kind = ExpressionKind.String;
-        if (value is double) Kind = ExpressionKind.Number;
-        if (value is bool) Kind = ExpressionKind.Bool;
+        parameters.First().Evaluate(_environment);
+        value = parameters.First().value;
+
+        System.Console.WriteLine(value);
     }
 
     public override object? GetValue() => value;

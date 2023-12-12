@@ -6,24 +6,24 @@ public class Logarithm : BasicExpression
 
     public override object? value { get; set; }
 
-    List<Expression> Arguments;
+    List<Expression> parameters;
 
-    public Logarithm(List<Expression> arguments, Environment scope) : base(scope)
+    public Logarithm(List<Expression> _parameters, Environment _environment) : base(_environment)
     {
-        Arguments = arguments;
+        parameters = _parameters;
         Kind = ExpressionKind.Number;
-        if (Arguments.Count != 2)
+        if (parameters.Count != 2)
         {
-            Console.WriteLine($"!semantic error: function \"log\" recieves 1 argument(s), but {Arguments.Count} were given.");
+            System.Console.WriteLine($"! SEMANTIC ERROR: function \"cos\" needs 1 parameter(s), but {_parameters.Count} were given.");
             throw new Exception();
         }
     }
 
-    public override void Evaluate(Environment scope)
+    public override void Evaluate(Environment _environment)
     {
-        Arguments[0].Evaluate(scope);
-        Arguments[1].Evaluate(scope);
-        value = Math.Log((double)Arguments[1].value!, (double)Arguments[0].value!);
+        parameters.First().Evaluate(_environment);
+        parameters[1].Evaluate(_environment);
+        value = Math.Log((double)parameters.First().value!, (double)parameters[1].value!);
     }
 
     public override object? GetValue() => value;

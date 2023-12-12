@@ -1,28 +1,28 @@
 namespace THE_HULK;
 
-public class SinNode : BasicExpression
+public class Sin : BasicExpression
 {
     public override ExpressionKind Kind { get; set; }
 
     public override object? value { get; set; }
 
-    List<Expression> Arguments;
+    List<Expression> parameter;
 
-    public SinNode(List<Expression> Arguments, Environment scope) : base(scope)
+    public Sin(List<Expression> _parameters, Environment _environment) : base(_environment)
     {
-        this.Arguments = Arguments;
+        this.parameter = _parameters;
         Kind = ExpressionKind.Number;
-        if (Arguments.Count != 1)
+        if (_parameters.Count != 1)
         {
-            Console.WriteLine($"!semantic error: function \"sin\" recieves 1 argument(s), but {Arguments.Count} were given.");
+            System.Console.WriteLine($"! SEMANTIC ERROR: function \"cos\" needs 1 parameter(s), but {_parameters.Count} were given.");
             throw new Exception();
         }
     }
 
-    public override void Evaluate(Environment scope)
+    public override void Evaluate(Environment _environment)
     {
-        Arguments[0].Evaluate(scope);
-        value = Math.Sin((double)Arguments[0].value!);
+        parameter.First().Evaluate(_environment);
+        value = Math.Sin((double)parameter.First().value!);
     }
 
     public override object? GetValue() => value;

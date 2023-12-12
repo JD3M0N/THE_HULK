@@ -16,12 +16,12 @@ public class EqualTo : BinaryExpression
     public override ExpressionKind Kind { get; set; }
     public override object? value { get; set; }
 
-    public override void CheckNodesSemantic(Expression nodeLeft, TokenKind _operator, Expression nodeRight)
+    public override void SemantiCheck(Expression nodeLeft, TokenKind _operator, Expression nodeRight)
     {
         if (base.nodeLeft!.Kind == ExpressionKind.Temp || base.nodeRight!.Kind == ExpressionKind.Temp) { return; }
         if (base.nodeLeft.Kind != base.nodeRight.Kind)
         {
-            Console.WriteLine($"! SEMANTIC ERROR: operator \"{_operator}\" cannot be used with different data types.");
+            System.Console.WriteLine($"! SEMANTIC ERROR: operator \"{_operator}\" cannot be used with different data types.");
             throw new Exception();
         }
     }
@@ -33,7 +33,7 @@ public class EqualTo : BinaryExpression
 
         if (nodeLeft.Kind != nodeRight.Kind)
         {
-            Console.WriteLine($"! SEMANTIC ERROR: \"{Operator}\" cannot be used between \"{nodeLeft.Kind}\" and \"{nodeRight.Kind}\".");
+            System.Console.WriteLine($"! SEMANTIC ERROR: \"{Operator}\" cannot be used between \"{nodeLeft.Kind}\" and \"{nodeRight.Kind}\".");
             throw new Exception();
         }
 

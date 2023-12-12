@@ -20,7 +20,7 @@ public abstract class BinaryExpression : Expression
         Operator = _operator;
     }
 
-    public virtual void CheckNodesSemantic(Expression nodeLeft, TokenKind operator_, Expression nodeRight)
+    public virtual void SemantiCheck(Expression nodeLeft, TokenKind operator_, Expression nodeRight)
     {
         if ((nodeLeft!.Kind != ExpressionKind.Number && nodeLeft.Kind != ExpressionKind.Temp) || (nodeRight!.Kind != ExpressionKind.Number && nodeRight.Kind != ExpressionKind.Temp))
         {

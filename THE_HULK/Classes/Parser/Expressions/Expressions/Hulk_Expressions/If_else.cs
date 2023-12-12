@@ -6,13 +6,13 @@ public class If_Else : Expression
 {
     public Expression condition;
     public Expression nodeLeft;
-    public Expression rightNode;
+    public Expression nodeRight;
 
     public If_Else(Expression _condition, Expression _nodeLeft, Expression _nodeRight) : base(null!)
     {
         condition = _condition;
         nodeLeft = _nodeLeft;
-        rightNode = _nodeRight;
+        nodeRight = _nodeRight;
         Kind = ExpressionKind.Temp;
     }
 
@@ -32,9 +32,9 @@ public class If_Else : Expression
         }
         else
         {
-            rightNode.Evaluate(_environment);
-            value = rightNode!.GetValue();
-            Kind = rightNode.Kind;
+            nodeRight.Evaluate(_environment);
+            value = nodeRight!.GetValue();
+            Kind = nodeRight.Kind;
         }
     }
 

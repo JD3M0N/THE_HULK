@@ -13,7 +13,8 @@ public class TokenCommon : Token
         symbol = _symbol;
     }
     public override string GetTokenName() => symbol;
-
+    
+    //This Tokens has no value.
     public override object GetTokenValue() => throw new NotImplementedException();
 
     public override string ToString() => $"{base.Kind}: {symbol}";

@@ -14,16 +14,16 @@ public class Not : UnaryExpression
         this.node = _node;
     }
 
-    public override void CheckNodeSemantic(Expression node)
+    public override void SemantiCheck(Expression node)
     {
         if (this.node.Kind != ExpressionKind.Bool && this.node.Kind != ExpressionKind.Temp)
         {
-            Console.WriteLine($"!SEMANTIC ERROR: operator \"{TokenKind.Not}\" cannot be applied to \"{this.node.Kind}\".");
+            System.Console.WriteLine($"! SEMANTIC ERROR: operator \"{TokenKind.Not}\" cannot be applied to \"{this.node.Kind}\".");
             throw new Exception();
         }
     }
 
-    public override void Evaluate(Environment scope)
+    public override void Evaluate(Environment _environment)
     {
         node.Evaluate(environment!);
         value = !(bool)node.GetValue()!;

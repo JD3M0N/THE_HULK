@@ -23,7 +23,8 @@
 public class Lexer
 {
 
-    public readonly string imput;
+    public string imput;
+
     private int currentPos;
 
     // ===>>> Constructor <<<===
@@ -91,7 +92,7 @@ public class Lexer
             else
             {
                 tokens.Add(new TokenCommon(TokenKind.Unknown, currentChar.ToString()));
-                Console.WriteLine($"!lexical error: \"{tokens.Last()}\" is not a valid token.");
+                System.Console.WriteLine($"! LEXICAL ERROR: \"{tokens.Last()}\" isn't a valid token.");
                 currentPos++;
             }
         }
@@ -99,7 +100,7 @@ public class Lexer
         // Add EOF token
         if (tokens.Last().GetTokenName() != ";")
         {
-            Console.WriteLine("!syntax error: expression must end with \";\".");
+            System.Console.WriteLine("! SYNTAX ERROR: expression must end with \";\".");
             throw new Exception();
         }
 
@@ -123,7 +124,7 @@ public class Lexer
 
             if (IsLetter(LookAhead(1)))
             {
-                Console.WriteLine($"Lexical Error!: \"{number + LookAhead(1)}\" isn't a valid token.");
+                Console.WriteLine($"! LEXICAL ERROR: \"{number + LookAhead(1)}\" isn't a valid token.");
                 throw new Exception();
             }
 

@@ -45,15 +45,15 @@ public class AbstractSyntaxTree
     {
         if (tokens.Count <= 1)
         {
-            Console.WriteLine("Error 404, not enough arguments founded");
+            System.Console.WriteLine("Error 404, not enough arguments founded");
             throw new Exception();
         }
 
-        Expression ast = PaseExpressionLv1(publicEnvironment);
+        Expression ast = ParseExpressionLv1(publicEnvironment);
 
         if (currentToken.Kind != TokenKind.Semicolon)
         {
-            Console.WriteLine($"! SYNTAX ERROR: operator or expression is missing after \"{currentToken}\"");
+            System.Console.WriteLine($"! SYNTAX ERROR: operator or expression is missing after \"{currentToken}\"");
             throw new Exception();
         }
         return ast;
@@ -61,15 +61,15 @@ public class AbstractSyntaxTree
 
 
 
-    private Expression PaseExpressionLv1(Environment environment)
+    private Expression ParseExpressionLv1(Environment environment)
     {
-        Expression nodeLeft = PaseExpressionLv2(environment);
+        Expression nodeLeft = ParseExpressionLv2(environment);
 
         while (IsALevel1Operator(currentToken.Kind))
         {
             TokenKind operation = currentToken.Kind;
             Eat();
-            Expression nodeRight = PaseExpressionLv2(environment);
+            Expression nodeRight = ParseExpressionLv2(environment);
             nodeLeft = ParseBinaryExpression(nodeLeft, operation, nodeRight);
         }
 
@@ -77,15 +77,15 @@ public class AbstractSyntaxTree
         return node;
     }
 
-    private Expression PaseExpressionLv2(Environment environment)
+    private Expression ParseExpressionLv2(Environment environment)
     {
-        Expression nodeLeft = PaseExpressionLv3(environment);
+        Expression nodeLeft = ParseExpressionLv3(environment);
 
         while (IsALevel2Operator(currentToken.Kind))
         {
             TokenKind operation = currentToken.Kind;
             Eat();
-            Expression nodeRight = PaseExpressionLv3(environment);
+            Expression nodeRight = ParseExpressionLv3(environment);
             nodeLeft = ParseBinaryExpression(nodeLeft, operation, nodeRight);
         }
 
@@ -93,15 +93,15 @@ public class AbstractSyntaxTree
         return node;
     }
 
-    private Expression PaseExpressionLv3(Environment environment)
+    private Expression ParseExpressionLv3(Environment environment)
     {
-        Expression nodeLeft = PaseExpressionLv4(environment);
+        Expression nodeLeft = ParseExpressionLv4(environment);
 
         while (IsALevel3Operator(currentToken.Kind))
         {
             TokenKind operation = currentToken.Kind;
             Eat();
-            Expression rightNode = PaseExpressionLv4(environment);
+            Expression rightNode = ParseExpressionLv4(environment);
             nodeLeft = ParseBinaryExpression(nodeLeft, operation, rightNode);
         }
 
@@ -109,15 +109,15 @@ public class AbstractSyntaxTree
         return node;
     }
 
-    private Expression PaseExpressionLv4(Environment environment)
+    private Expression ParseExpressionLv4(Environment environment)
     {
-        Expression nodeLeft = PaseExpressionLv5(environment);
+        Expression nodeLeft = ParseExpressionLv5(environment);
 
         while (IsALevel4Operator(currentToken.Kind))
         {
             TokenKind operation = currentToken.Kind;
             Eat();
-            Expression nodeRight = PaseExpressionLv5(environment);
+            Expression nodeRight = ParseExpressionLv5(environment);
             nodeLeft = ParseBinaryExpression(nodeLeft, operation, nodeRight);
         }
 
@@ -125,15 +125,15 @@ public class AbstractSyntaxTree
         return node;
     }
 
-    private Expression PaseExpressionLv5(Environment environment)
+    private Expression ParseExpressionLv5(Environment environment)
     {
-        Expression nodeLeft = BuildAtom(environment);
+        Expression nodeLeft = ParseMinimalExpression(environment);
 
         while (IsALevel5Operator(currentToken.Kind))
         {
             TokenKind operation = currentToken.Kind;
             Eat();
-            Expression nodeRight = BuildAtom(environment);
+            Expression nodeRight = ParseMinimalExpression(environment);
             nodeLeft = ParseBinaryExpression(nodeLeft, operation, nodeRight);
         }
 
@@ -141,7 +141,7 @@ public class AbstractSyntaxTree
         return node;
     }
 
-    private Expression BuildAtom(Environment privateEnvironment)
+    private Expression ParseMinimalExpression(Environment privateEnvironment)
     {
         switch (currentToken.Kind)
         {
@@ -153,8 +153,8 @@ public class AbstractSyntaxTree
 
             case TokenKind.LeftParenthesis:
                 Eat();
-                Expression expression = PaseExpressionLv1(privateEnvironment);
-                Expect(TokenKind.RightParenthesis);
+                Expression expression = ParseExpressionLv1(privateEnvironment);
+                WatchFor(TokenKind.RightParenthesis);
                 return expression;
 
             case TokenKind.String:
@@ -175,50 +175,50 @@ public class AbstractSyntaxTree
 
             // ===>>> Let In Expression <<<===
             case TokenKind.LetKeyWord:
-                return ParseLetInStructure(privateEnvironment);
+                return ParseLet_in(privateEnvironment);
             // ===>>> End of Let In Expression <<<===
 
             // ===>>> Conditional Expressions <<<===
             case TokenKind.IfKeyWord:
-                return PaseConditionalExpression(privateEnvironment);
+                return ParseConditionalExpression(privateEnvironment);
 
             case TokenKind.ElseKeyWord:
-                Console.WriteLine($"! SYNTAX ERROR: if_else structure isnt correct");
+                System.Console.WriteLine($"! SYNTAX ERROR: if_else structure isnt correct");
                 throw new Exception();
             // ===>>> End of Conditional Expressions <<<===
 
             // ===>>> Unary Expressions <<<===
 
-                // ===>>> Negative Numbers <<<=== 
+            // ===>>> Negative Numbers <<<=== 
             case TokenKind.Difference:
                 Eat();
                 if (NextToken().Kind == TokenKind.Number)
                 {
-                    Negation negativeNumber = new Negation(PaseExpressionLv3(privateEnvironment));
-                    negativeNumber.CheckNodeSemantic(negativeNumber.node);
+                    Negation negativeNumber = new Negation(ParseExpressionLv3(privateEnvironment));
+                    negativeNumber.SemantiCheck(negativeNumber.node);
                     return negativeNumber;
                 }
                 else
                 {
-                    Negation negativeNumber = new Negation(BuildAtom(privateEnvironment));
-                    negativeNumber.CheckNodeSemantic(negativeNumber.node);
+                    Negation negativeNumber = new Negation(ParseMinimalExpression(privateEnvironment));
+                    negativeNumber.SemantiCheck(negativeNumber.node);
                     return negativeNumber;
                 }
-                // ===>>> End of Negative Numbers <<<===
+            // ===>>> End of Negative Numbers <<<===
 
             // ===>>> Negative Boolean Expressions <<<===
             case TokenKind.Not:
                 Eat();
                 if (NextToken().Kind == TokenKind.Number)
                 {
-                    Not notExpression = new Not(PaseExpressionLv1(privateEnvironment));
-                    notExpression.CheckNodeSemantic(notExpression.node);
+                    Not notExpression = new Not(ParseExpressionLv1(privateEnvironment));
+                    notExpression.SemantiCheck(notExpression.node);
                     return notExpression;
                 }
                 else
                 {
-                    Not notExpression = new Not(BuildAtom(privateEnvironment));
-                    notExpression.CheckNodeSemantic(notExpression.node);
+                    Not notExpression = new Not(ParseMinimalExpression(privateEnvironment));
+                    notExpression.SemantiCheck(notExpression.node);
                     return notExpression;
                 }
             // ===>>> End of Negative Boolean Expressions <<<===
@@ -227,8 +227,14 @@ public class AbstractSyntaxTree
 
             // ===>>> Variables and Functions <<<===
             case TokenKind.Identifier:
-                if (IsParseInFunction(currentToken)) { return PaseInFunctionCall(privateEnvironment); }
-                if (NextToken().Kind == TokenKind.LeftParenthesis) { return IndexFunction(privateEnvironment); }
+                if (IsParseInFunction(currentToken))
+                {
+                    return ParseIn(privateEnvironment);
+                }
+                if (NextToken().Kind == TokenKind.LeftParenthesis)
+                {
+                    return IndexFunction(privateEnvironment);
+                }
                 Variable variable = new(currentToken.GetTokenName());
                 variable.CheckSemantic(privateEnvironment);
                 Eat();
@@ -238,66 +244,73 @@ public class AbstractSyntaxTree
                 return null!;
             // ===>>> End of Variables and Functions <<<===
 
-            
+
 
             // ===>>> Syntax Error <<<===
             default:
-                Console.WriteLine($"! SYNTAX ERROR: unexpected token \"{currentToken}\" after \"{tokens[currentTokenIndex - 1]}\" at index: {currentTokenIndex}.");
+                System.Console.WriteLine($"! SYNTAX ERROR: unexpected token \"{currentToken}\" after \"{tokens[currentTokenIndex - 1]}\" at index: {currentTokenIndex}.");
                 throw new Exception();
-                
+
         }
     }
 
-    Expression PaseConditionalExpression(Environment privateEnvironment)
+    Expression ParseConditionalExpression(Environment privateEnvironment)
     {
         Eat();
         If_Else conditionalExpression = new(null!, null!, null!);
-        conditionalExpression.condition = PaseExpressionLv1(privateEnvironment);
+        conditionalExpression.condition = ParseExpressionLv1(privateEnvironment);
         if (currentToken.Kind == TokenKind.ElseKeyWord)
         {
-            Console.WriteLine($"! SYNTAX ERROR: if_else expression isnt complete.");
+            System.Console.WriteLine($"! SYNTAX ERROR: if_else expression isnt complete.");
             throw new Exception();
         }
-        conditionalExpression.nodeLeft = PaseExpressionLv1(privateEnvironment);
-        Expect(TokenKind.ElseKeyWord);
-        conditionalExpression.rightNode = PaseExpressionLv1(privateEnvironment);
+        conditionalExpression.nodeLeft = ParseExpressionLv1(privateEnvironment);
+        WatchFor(TokenKind.ElseKeyWord);
+        conditionalExpression.nodeRight = ParseExpressionLv1(privateEnvironment);
         return conditionalExpression;
     }
 
-    Expression ParseLetInStructure(Environment privateEnvironment)
+    Expression ParseLet_in(Environment privateEnvironment)
     {
         Eat();
-        Let_In letInExpression = new(null!, privateEnvironment.MakeChild());
-        IndexVarible(letInExpression.environment!);
-        Expect(TokenKind.InKeyWord);
-        letInExpression.argument = PaseExpressionLv1(letInExpression.environment!);
-        return letInExpression;
+
+        Let_In letIn = new(null!, privateEnvironment.CreateChild());
+
+        IndexVarible(letIn.environment!);
+
+        WatchFor(TokenKind.InKeyWord);
+
+        letIn.parameter = ParseExpressionLv1(letIn.environment!);
+
+        return letIn;
     }
 
     private void ParseFunction()
     {
         Eat();
-        Expect(TokenKind.Identifier);
+        WatchFor(TokenKind.Identifier);
 
-        string functionName = PreviousToken().GetTokenName();
-        FunctionStructure arguments = new FunctionStructure();
+        string name = PreviousToken().GetTokenName();
+        FunctionStructure parameters = new FunctionStructure();
 
-        Expect(TokenKind.LeftParenthesis);
-        IndexVars(arguments.VariablesOfTheFunction!);
-        Expect(TokenKind.RightParenthesis);
-        Expect(TokenKind.Arrow);
+        WatchFor(TokenKind.LeftParenthesis);
+        IndexVars(parameters.VariablesOfTheFunction!);
+        WatchFor(TokenKind.RightParenthesis);
+        WatchFor(TokenKind.Arrow);
 
         for (int i = currentTokenIndex; i < tokens.Count; i++)
-            arguments.tokens!.Add(tokens[i]);
+            parameters.tokens!.Add(tokens[i]);
 
-        publicEnvironment.functions.Add(functionName, arguments);
+        publicEnvironment.functions.Add(name, parameters);
         Eat(tokens.Count - currentTokenIndex - 1);
     }
 
     private void IndexVars(List<string> argsVariables)
     {
-        Expect(TokenKind.Identifier);
+        WatchFor(TokenKind.Identifier);
+
         argsVariables.Add(PreviousToken().GetTokenName());
+
         if (currentToken.Kind == TokenKind.Comma)
         {
             Eat();
@@ -307,57 +320,69 @@ public class AbstractSyntaxTree
 
 
 
-    private Function IndexFunction(Environment localScope)
+    private Function IndexFunction(Environment privateEnvironment)
     {
         string functId = currentToken.GetTokenName();
-        FunctionInvocation foo = new FunctionInvocation(functId, new List<Expression>(), publicEnvironment);
-        foo.CheckSemantic(localScope);
+
+        FunctionInvocation function = new FunctionInvocation(functId, new List<Expression>(), publicEnvironment);
+
+        function.SemantiCheck(privateEnvironment);
+
         Eat(2);
-        GetArgs(localScope, foo.variablesOfTheFunction);
-        foo.CheckVariablesCount(localScope);
-        Expect(TokenKind.RightParenthesis);
-        return foo;
+
+        GetArgs(privateEnvironment, function.variablesOfTheFunction);
+
+        function.CheckVariablesCount(privateEnvironment);
+
+        WatchFor(TokenKind.RightParenthesis);
+
+        return function;
     }
 
-    private Expression PaseInFunctionCall(Environment localScope)
+    private Expression ParseIn(Environment privateEnvironment)
     {
-        List<Expression> arguments = new List<Expression>();
+        List<Expression> parameters = new List<Expression>();
+
         string functId = currentToken.GetTokenName();
+
         Eat();
-        Expect(TokenKind.LeftParenthesis);
-        GetArgs(localScope, arguments);
-        Expect(TokenKind.RightParenthesis);
+
+        WatchFor(TokenKind.LeftParenthesis);
+
+        GetArgs(privateEnvironment, parameters);
+
+        WatchFor(TokenKind.RightParenthesis);
 
         switch (functId)
         {
             case "print":
-                Print print = new Print(arguments, localScope);
+                Print print = new Print(parameters, privateEnvironment);
                 return print;
             case "sin":
-                SinNode sin = new SinNode(arguments, localScope);
+                Sin sin = new Sin(parameters, privateEnvironment);
                 return sin;
             case "cos":
-                CosNode cos = new CosNode(arguments, localScope);
+                Cos cos = new Cos(parameters, privateEnvironment);
                 return cos;
             case "exp":
-                Exponential exp = new Exponential(arguments, localScope);
+                Exponential exp = new Exponential(parameters, privateEnvironment);
                 return exp;
             case "sqrt":
-                SquareRoot sqrt = new SquareRoot(arguments, localScope);
+                SquareRoot sqrt = new SquareRoot(parameters, privateEnvironment);
                 return sqrt;
             default:
-                Logarithm log = new Logarithm(arguments, localScope);
+                Logarithm log = new Logarithm(parameters, privateEnvironment);
                 return log;
         }
     }
 
-    private void GetArgs(Environment localScope, List<Expression> arguments)
+    private void GetArgs(Environment privateEnvironment, List<Expression> parameters)
     {
-        arguments.Add(PaseExpressionLv1(localScope));
+        parameters.Add(ParseExpressionLv1(privateEnvironment));
         if (currentToken.Kind == TokenKind.Comma)
         {
             Eat();
-            GetArgs(localScope, arguments);
+            GetArgs(privateEnvironment, parameters);
         }
     }
 
@@ -389,11 +414,11 @@ public class AbstractSyntaxTree
 
     private Token PreviousToken() => tokens[currentTokenIndex - 1];
 
-    private void Expect(TokenKind expected)
+    private void WatchFor(TokenKind expected)
     {
         if (currentToken.Kind != expected)
         {
-            Console.WriteLine($"! SYNTAX ERROR: unexpected token: \"{currentToken}\" at index: {currentTokenIndex} expected: \"{expected}\".");
+            System.Console.WriteLine($"! SYNTAX ERROR: unexpected token: \"{currentToken}\" at index: {currentTokenIndex} expected: \"{expected}\".");
             throw new Exception();
         }
 
@@ -406,55 +431,55 @@ public class AbstractSyntaxTree
         {
             case TokenKind.And:
                 BinaryExpression andNode = new And(_operator, nodeLeft, nodeRight);
-                andNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                andNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = andNode;
                 break;
 
             case TokenKind.Or:
                 BinaryExpression orNode = new Or(_operator, nodeLeft, nodeRight);
-                orNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                orNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = orNode;
                 break;
 
             case TokenKind.GreaterOrEqualThan:
                 BinaryExpression greatherOrEqualsNode = new GreaterOrEqualThan(_operator, nodeLeft, nodeRight);
-                greatherOrEqualsNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                greatherOrEqualsNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = greatherOrEqualsNode;
                 break;
 
             case TokenKind.GreaterThan:
                 BinaryExpression greatherThanNode = new GreaterThan(_operator, nodeLeft, nodeRight);
-                greatherThanNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                greatherThanNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = greatherThanNode;
                 break;
 
             case TokenKind.LessOrEqualThan:
                 BinaryExpression lessOrEqualsNode = new LessOrEqualThan(_operator, nodeLeft, nodeRight);
-                lessOrEqualsNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                lessOrEqualsNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = lessOrEqualsNode;
                 break;
 
             case TokenKind.LessThan:
                 BinaryExpression lesserThanNode = new LessThan(_operator, nodeLeft, nodeRight);
-                lesserThanNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                lesserThanNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = lesserThanNode;
                 break;
 
             case TokenKind.EqualTo:
                 BinaryExpression equalsTo = new EqualTo(_operator, nodeLeft, nodeRight);
-                equalsTo.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                equalsTo.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = equalsTo;
                 break;
 
             case TokenKind.Sum:
                 BinaryExpression additionNode = new Sum(_operator, nodeLeft, nodeRight);
-                additionNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                additionNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = additionNode;
                 break;
 
             case TokenKind.Difference:
                 BinaryExpression substractionNode = new Difference(_operator, nodeLeft, nodeRight);
-                substractionNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                substractionNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = substractionNode;
                 break;
 
@@ -465,25 +490,25 @@ public class AbstractSyntaxTree
 
             case TokenKind.Product:
                 BinaryExpression multiplicationNode = new Product(_operator, nodeLeft, nodeRight);
-                multiplicationNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                multiplicationNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = multiplicationNode;
                 break;
 
             case TokenKind.Quotient:
                 BinaryExpression divisionNode = new Quotient(_operator, nodeLeft, nodeRight);
-                divisionNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                divisionNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = divisionNode;
                 break;
 
             case TokenKind.Modulo:
                 BinaryExpression modulusNode = new Modulo(_operator, nodeLeft, nodeRight);
-                modulusNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                modulusNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = modulusNode;
                 break;
 
             case TokenKind.Power:
                 BinaryExpression powerNode = new Power(_operator, nodeLeft, nodeRight);
-                powerNode.CheckNodesSemantic(nodeLeft, _operator, nodeRight);
+                powerNode.SemantiCheck(nodeLeft, _operator, nodeRight);
                 nodeLeft = powerNode;
                 break;
         }
@@ -493,10 +518,10 @@ public class AbstractSyntaxTree
 
     void IndexVarible(Environment letInEnvironment)
     {
-        Expect(TokenKind.Identifier);
+        WatchFor(TokenKind.Identifier);
         string varName = PreviousToken().GetTokenName();
-        Expect(TokenKind.EqualEqual);
-        letInEnvironment.variables.Add(varName, PaseExpressionLv1(letInEnvironment));
+        WatchFor(TokenKind.EqualEqual);
+        letInEnvironment.variables.Add(varName, ParseExpressionLv1(letInEnvironment));
 
 
         if (currentToken.Kind == TokenKind.Comma)

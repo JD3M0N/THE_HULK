@@ -13,11 +13,11 @@ public class Negation : UnaryExpression
         node = _node;
     }
 
-    public override void CheckNodeSemantic(Expression node)
+    public override void SemantiCheck(Expression node)
     {
         if(this.node.Kind != ExpressionKind.Number && this.node.Kind != ExpressionKind.Temp)
         {
-            Console.WriteLine($"!SEMANTIC ERROR: operator \"{TokenKind.Difference}\" cannot be applied to \"{this.node.Kind}\".");
+            System.Console.WriteLine($"! SEMANTIC ERROR: operator \"{TokenKind.Difference}\" cannot be applied to \"{this.node.Kind}\".");
             throw new Exception();
         }
     }

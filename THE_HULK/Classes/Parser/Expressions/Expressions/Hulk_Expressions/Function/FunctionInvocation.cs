@@ -21,11 +21,11 @@ public class FunctionInvocation : Function
         publicEnvironment = _publicEnvironment;
     }
 
-    public void CheckSemantic(Environment privateEnvironment)
+    public void SemantiCheck(Environment privateEnvironment)
     {
         if (!privateEnvironment.functions.ContainsKey(name))
         {
-            CheckSemantic(privateEnvironment.father!);
+            SemantiCheck(privateEnvironment.father!);
         }
         else
         {
@@ -45,7 +45,9 @@ public class FunctionInvocation : Function
 
     public override void Evaluate(Environment scope)
     {
-        Environment child = scope.MakeChild();
+
+        Environment child = scope.CreateChild();
+        // tiene que llegar al global
         child.functions = scope.functions;
 
         for (int i = 0; i < variablesOfTheFunction.Count; i++)

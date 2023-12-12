@@ -1,27 +1,27 @@
 namespace THE_HULK;
-public class CosNode : BasicExpression
+public class Cos : BasicExpression
 {
     public override ExpressionKind Kind { get; set; }
 
     public override object? value { get; set; }
 
-    List<Expression> Arguments;
+    List<Expression> parameter;
 
-    public CosNode(List<Expression> Arguments, Environment scope) : base(scope)
+    public Cos(List<Expression> _parameter, Environment _environment) : base(_environment)
     {
-        this.Arguments = Arguments;
+        this.parameter = _parameter;
         Kind = ExpressionKind.Number;
-        if (Arguments.Count != 1)
+        if (_parameter.Count != 1)
         {
-            Console.WriteLine($"!semantic error: function \"cos\" recieves 1 argument(s), but {Arguments.Count} were given.");
+            System.Console.WriteLine($"! SEMANTIC ERROR: function \"cos\" needs 1 parameter(s), but {_parameter.Count} were given.");
             throw new Exception();
         }
     }
 
-    public override void Evaluate(Environment scope)
+    public override void Evaluate(Environment _environment)
     {
-        Arguments[0].Evaluate(scope);
-        value = Math.Cos((double)Arguments[0].value!);
+        parameter.First().Evaluate(_environment);
+        value = Math.Cos((double)parameter.First().value!);
     }
 
     public override object? GetValue() => value;

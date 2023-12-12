@@ -24,7 +24,13 @@ public class Quotient : BinaryExpression
 
         if (nodeLeft.Kind != ExpressionKind.Number || nodeRight.Kind != ExpressionKind.Number)
         {
-            Console.WriteLine($"! SEMANTIC ERROR: \"{Operator}\" cannot be used between \"{nodeLeft.Kind}\" and \"{nodeRight.Kind}\".");
+            System.Console.WriteLine($"! SEMANTIC ERROR: \"{Operator}\" cannot be used between \"{nodeLeft.Kind}\" and \"{nodeRight.Kind}\".");
+            throw new Exception();
+        }
+
+        if ((double)nodeRight.value! == 0)
+        {
+            System.Console.WriteLine(($"! SEMANTIC ERROR: \"{Operator}\" cannot be used between \"{nodeLeft.value}\" and \"{nodeRight.value}\". You can't divide by 0."));
             throw new Exception();
         }
 
