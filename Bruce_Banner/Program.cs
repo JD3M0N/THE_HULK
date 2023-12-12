@@ -45,22 +45,32 @@ public class Interpreter
     #endregion
     public static void Run()
     {   
-        int count = 0;
-        int maxCount = 20000;
+        // int count = 0;
+        // int maxCount = 20000;
 
         THE_HULK.Environment PublicEnvironment = new THE_HULK.Environment();
+        Console.ForegroundColor = ConsoleColor.Red;
         System.Console.WriteLine("Welcome to [H]avana [U]niversity [L]anguage for [K]ompilers:"); ;
+        Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine("Start using HULK :) ");
+        Console.ResetColor();
 
         while (true)
         {
             try
             {
-                Console.Write(">");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write("==>>");
+                Console.ResetColor();
+
                 string input = Console.ReadLine()!;
 
                 if (input == string.Empty)
-                    throw new Exception("Error 404: Not Text Found");
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    System.Console.WriteLine("Error 404: Not Text Found");
+                    Console.ResetColor();
+                }
 
                 var Lexer = new Lexer(input);
                 List<Token> tokens = Lexer.Tokenizer();
@@ -72,6 +82,11 @@ public class Interpreter
                 if (AST is not null)
                 {
                     AST.Evaluate(PublicEnvironment);
+
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    System.Console.Write("==>>");
+                    Console.ResetColor();
+
                     System.Console.WriteLine(AST.value);
                 }
             }
@@ -104,6 +119,9 @@ public class Interpreter
             //"let a = 42 in if (a % 2 == 0) print(\"Even\") else print(\"odd\");"
 
             // "print(7 + (let x = 2 in x * x));"
+
+            // "function Sum(x) => Sum(x - 1);",
+            // "let a = 1 in Sum(a);"
         };
         foreach (var input in inputs)
         {

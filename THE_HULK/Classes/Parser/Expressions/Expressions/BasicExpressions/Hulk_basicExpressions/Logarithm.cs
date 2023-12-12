@@ -14,7 +14,9 @@ public class Logarithm : BasicExpression
         Kind = ExpressionKind.Number;
         if (parameters.Count != 2)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             System.Console.WriteLine($"! SEMANTIC ERROR: function \"cos\" needs 1 parameter(s), but {_parameters.Count} were given.");
+            Console.ResetColor();
             throw new Exception();
         }
     }

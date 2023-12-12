@@ -30,7 +30,7 @@ public class Quotient : BinaryExpression
 
         if ((double)nodeRight.value! == 0)
         {
-            System.Console.WriteLine(($"! SEMANTIC ERROR: \"{Operator}\" cannot be used between \"{nodeLeft.value}\" and \"{nodeRight.value}\". You can't divide by 0."));
+            System.Console.WriteLine(($"! RUN TIME ERROR: \"{Operator}\" cannot be used between \"{nodeLeft.value}\" and \"{nodeRight.value}\". You can't divide by 0."));
             throw new Exception();
         }
 

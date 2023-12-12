@@ -24,7 +24,9 @@ public class And : BinaryExpression
 
         if (nodeLeft.Kind != ExpressionKind.Bool || nodeRight.Kind != ExpressionKind.Bool)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             System.Console.WriteLine($"! SEMANTIC ERROR: \"{Operator}\" cannot be used between \"{nodeLeft.Kind}\" and \"{nodeRight.Kind}\".");
+            Console.ResetColor();
             throw new Exception();
         }
 
@@ -35,7 +37,9 @@ public class And : BinaryExpression
     {
         if ((base.nodeLeft.Kind != ExpressionKind.Bool && base.nodeLeft.Kind != ExpressionKind.Temp) || (base.nodeRight.Kind != ExpressionKind.Bool && base.nodeRight.Kind != ExpressionKind.Temp))
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             System.Console.WriteLine($"! SEMANTIC ERROR: operator \"{_operator}\" cannot be used between \"{base.nodeLeft.Kind}\" and \"{base.nodeRight!.Kind}\" data types.");
+            Console.ResetColor();
             throw new Exception();
         }
     }

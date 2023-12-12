@@ -33,7 +33,9 @@ public class Variable : BasicExpression
 
         if (privateEnvironment is null)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"! SEMANTIC ERROR: the variable \"{name}\" doesn't exists.");
+            Console.ResetColor();
             throw new Exception();
         }
         if (privateEnvironment.variables.ContainsKey(name))

@@ -100,7 +100,9 @@ public class Lexer
         // Add EOF token
         if (tokens.Last().GetTokenName() != ";")
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             System.Console.WriteLine("! SYNTAX ERROR: expression must end with \";\".");
+            Console.ResetColor();
             throw new Exception();
         }
 

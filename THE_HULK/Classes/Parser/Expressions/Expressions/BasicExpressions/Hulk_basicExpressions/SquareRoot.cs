@@ -14,7 +14,9 @@ public class SquareRoot : BasicExpression
         Kind = ExpressionKind.Number;
         if (_parameter.Count != 1)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             System.Console.WriteLine($"! SEMANTIC ERROR: function \"cos\" needs 1 parameter(s), but {_parameter.Count} were given.");
+            Console.ResetColor();
             throw new Exception();
         }
     }

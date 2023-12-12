@@ -21,7 +21,9 @@ public class EqualTo : BinaryExpression
         if (base.nodeLeft!.Kind == ExpressionKind.Temp || base.nodeRight!.Kind == ExpressionKind.Temp) { return; }
         if (base.nodeLeft.Kind != base.nodeRight.Kind)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             System.Console.WriteLine($"! SEMANTIC ERROR: operator \"{_operator}\" cannot be used with different data types.");
+            Console.ResetColor();
             throw new Exception();
         }
     }
